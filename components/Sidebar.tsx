@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutDashboard, Settings, Lightbulb, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Lightbulb, ShieldCheck } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   return (
@@ -18,10 +18,6 @@ const Sidebar: React.FC = () => {
         <a href="#" className="flex items-center gap-3 bg-[#1e293b] text-white px-4 py-3 rounded-xl border-l-4 border-blue-500 transition-all">
           <LayoutDashboard className="w-5 h-5 text-blue-400" />
           <span className="font-medium">Overview Dashboard</span>
-        </a>
-        <a href="#" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl transition-all">
-          <Settings className="w-5 h-5" />
-          <span className="font-medium">Predictive Maintenance</span>
         </a>
       </nav>
 
