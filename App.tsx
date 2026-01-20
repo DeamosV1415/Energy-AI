@@ -23,7 +23,7 @@ const App: React.FC = () => {
               <Lightbulb className="w-5 h-5 text-white" fill="white" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0a1128]">
-              SmartWatt <span className="text-blue-500">AI</span>
+              EnerVision <span className="text-blue-500">AI</span>
             </h1>
           </div>
         </div>
@@ -45,7 +45,7 @@ const App: React.FC = () => {
         </div>
         
         <footer className="mt-12 text-center text-slate-400 text-xs font-medium pb-8">
-          &copy; {new Date().getFullYear()} SmartWatt AI Building Intelligence. All systems operational.
+          &copy; {new Date().getFullYear()} EnerVision AI Building Intelligence. All systems operational.
         </footer>
       </main>
     </div>

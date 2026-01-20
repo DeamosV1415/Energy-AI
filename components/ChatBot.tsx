@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, User, Bot, Loader2 } from 'lucide-react';
 import { Message } from '../types';
@@ -8,7 +7,7 @@ const ChatBot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm SmartWatt. I can analyze anomalies, log maintenance, or optimize policies. How can I help?",
+      content: "Hello! I'm EnerVision. I can analyze anomalies, log maintenance, or optimize policies. How can I help?",
       timestamp: new Date()
     }
   ]);

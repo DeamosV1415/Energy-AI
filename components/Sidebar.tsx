@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LayoutDashboard, Lightbulb, ShieldCheck } from 'lucide-react';
 
@@ -9,7 +8,7 @@ const Sidebar: React.FC = () => {
         <div className="bg-blue-500 p-1.5 rounded-lg">
           <Lightbulb className="w-6 h-6 text-white" fill="white" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight">SmartWatt <span className="text-blue-400">AI</span></h1>
+        <h1 className="text-xl font-bold tracking-tight">EnerVision <span className="text-blue-400">AI</span></h1>
       </div>
       <p className="px-6 text-[10px] text-slate-500 font-medium uppercase tracking-wider mb-8">Building Intelligence System</p>
       
