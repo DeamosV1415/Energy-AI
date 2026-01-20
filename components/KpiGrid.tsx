@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Zap, Activity, AlertTriangle, Users } from 'lucide-react';
 import { KpiCardProps } from '../types';
@@ -18,7 +17,8 @@ const KpiCard: React.FC<KpiCardProps> = ({ title, value, subValue, icon, trend, 
           title.includes('Occupancy') ? 'bg-indigo-50 text-indigo-500' :
           'bg-blue-50 text-blue-500'
         }`}>
-          {React.cloneElement(icon as React.ReactElement, { className: 'w-5 h-5' })}
+          {/* Fix: Added <any> cast to satisfy the TypeScript compiler for Render's build process */}
+          {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-5 h-5' })}
         </div>
         <span className="text-slate-400 text-sm font-semibold">{title}</span>
       </div>
