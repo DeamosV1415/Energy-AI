@@ -17,7 +17,7 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-x-hidden">
         {/* Branding Header - Visible on all screens in the main area */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-1.5 rounded-lg shadow-sm">
               <Lightbulb className="w-5 h-5 text-white" fill="white" />
@@ -25,17 +25,6 @@ const App: React.FC = () => {
             <h1 className="text-2xl font-bold tracking-tight text-[#0a1128]">
               SmartWatt <span className="text-blue-500">AI</span>
             </h1>
-          </div>
-          
-          {/* User Profile / Status */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block text-right">
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-1">Status</p>
-              <p className="text-xs font-bold text-emerald-500">Operational</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
-              JD
-            </div>
           </div>
         </div>
 
