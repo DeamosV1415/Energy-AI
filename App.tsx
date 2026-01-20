@@ -1,10 +1,10 @@
-
 import React from 'react';
 import Sidebar from './components/Sidebar';
 import DashboardHeader from './components/DashboardHeader';
 import KpiGrid from './components/KpiGrid';
 import EnergyChart from './components/EnergyChart';
 import ChatBot from './components/ChatBot';
+import { Lightbulb } from 'lucide-react';
 
 const App: React.FC = () => {
   return (
@@ -16,24 +16,41 @@ const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-x-hidden">
-        {/* Mobile Header (Simplified) */}
-        <div className="lg:hidden flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold tracking-tight text-[#0a1128]">SmartWatt <span className="text-blue-500">AI</span></h1>
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">JD</div>
+        {/* Branding Header - Visible on all screens in the main area */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 p-1.5 rounded-lg shadow-sm">
+              <Lightbulb className="w-5 h-5 text-white" fill="white" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-[#0a1128]">
+              SmartWatt <span className="text-blue-500">AI</span>
+            </h1>
+          </div>
+          
+          {/* User Profile / Status */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block text-right">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-1">Status</p>
+              <p className="text-xs font-bold text-emerald-500">Operational</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+              JD
+            </div>
+          </div>
         </div>
 
-        {/* 1. Header (Time and Temp) stays at the top */}
+        {/* 1. Header (Time and Temp) */}
         <DashboardHeader />
         
-        {/* 2. ChatBot now at the top below header */}
+        {/* 2. ChatBot */}
         <div className="mb-8">
           <ChatBot />
         </div>
 
-        {/* 3. KPI Grid moved down */}
+        {/* 3. KPI Grid */}
         <KpiGrid />
 
-        {/* 4. Energy Chart moved down and made full-width for clarity */}
+        {/* 4. Energy Chart */}
         <div className="w-full">
           <EnergyChart />
         </div>
