@@ -4,14 +4,11 @@ import DashboardHeader from './components/DashboardHeader';
 import KpiGrid from './components/KpiGrid';
 import EnergyChart from './components/EnergyChart';
 import ChatBot from './components/ChatBot';
-import ThreeBackground from './components/ThreeBackground';
 import { Lightbulb } from 'lucide-react';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen flex font-inter relative">
-      {/* Three.js Animated Background */}
-      <ThreeBackground />
+    <div className="min-h-screen flex font-inter">
 
       {/* Fixed Sidebar for Desktop */}
       <div className="hidden lg:block">
@@ -19,7 +16,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-x-hidden relative z-10">
+      <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-x-hidden">
         {/* Branding Header */}
         <div className="flex items-center mb-6">
           <div className="flex items-center gap-3">
