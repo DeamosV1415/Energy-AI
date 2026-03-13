@@ -1,4 +1,5 @@
-const WEBHOOK_URL = "https://trav.app.n8n.cloud/webhook/rag-query";
+// Using Vite's import.meta.env for environment variables
+const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || "YOUR_N8N_WEBHOOK_URL_HERE";
 
 /**
  * Sends a query to the n8n RAG webhook.
