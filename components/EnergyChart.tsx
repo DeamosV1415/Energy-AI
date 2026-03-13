@@ -3,7 +3,6 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { EnergyDataPoint } from '../types';
 
-// Updated data: temp converted from Celsius (roughly 16-26) to Fahrenheit (roughly 60-79)
 const data: EnergyDataPoint[] = [
   { time: '00:00', power: 40, temp: 64 },
   { time: '02:00', power: 35, temp: 62 },
@@ -21,7 +20,10 @@ const data: EnergyDataPoint[] = [
 
 const EnergyChart: React.FC = () => {
   return (
-    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col">
+    <div className="bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-white/60 flex flex-col card-hover relative overflow-hidden">
+      {/* Decorative accent */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-emerald-500 rounded-t-3xl"></div>
+      
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h3 className="text-xl font-bold text-slate-800">Energy Consumption Analysis</h3>
@@ -29,11 +31,11 @@ const EnergyChart: React.FC = () => {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-sm shadow-blue-500/30"></div>
             <span className="text-xs font-bold text-slate-500">Power (kW)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-400 to-orange-400 shadow-sm shadow-rose-400/30"></div>
             <span className="text-xs font-bold text-slate-500">Temp (°F)</span>
           </div>
         </div>
@@ -44,8 +46,13 @@ const EnergyChart: React.FC = () => {
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorPower" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25}/>
+                <stop offset="50%" stopColor="#6366f1" stopOpacity={0.1}/>
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#fb7185" stopOpacity={0.1}/>
+                <stop offset="95%" stopColor="#fb7185" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -63,7 +70,13 @@ const EnergyChart: React.FC = () => {
               dx={-10}
             />
             <Tooltip 
-              contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+              contentStyle={{ 
+                borderRadius: '16px', 
+                border: '1px solid rgba(226, 232, 240, 0.5)', 
+                boxShadow: '0 20px 40px -12px rgb(0 0 0 / 0.1)',
+                backdropFilter: 'blur(12px)',
+                background: 'rgba(255, 255, 255, 0.9)'
+              }}
               itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
               formatter={(value, name) => [value, name === 'power' ? 'Power (kW)' : 'Temp (°F)']}
             />
@@ -81,7 +94,8 @@ const EnergyChart: React.FC = () => {
               stroke="#fb7185" 
               strokeWidth={2}
               strokeDasharray="5 5"
-              fill="transparent" 
+              fillOpacity={1}
+              fill="url(#colorTemp)" 
             />
           </AreaChart>
         </ResponsiveContainer>

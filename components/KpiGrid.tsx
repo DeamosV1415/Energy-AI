@@ -3,33 +3,35 @@ import { Zap, Activity, AlertTriangle, Users } from 'lucide-react';
 import { KpiCardProps } from '../types';
 
 const KpiCard: React.FC<KpiCardProps> = ({ title, value, subValue, icon, trend, trendType, description }) => {
+  const colorConfig = title.includes('Alerts') 
+    ? { bg: 'from-red-50 to-rose-50', border: 'border-red-100/50', icon: 'bg-red-100 text-red-500', glow: 'group-hover:shadow-red-500/10' }
+    : title.includes('Efficiency') 
+    ? { bg: 'from-emerald-50 to-green-50', border: 'border-emerald-100/50', icon: 'bg-emerald-100 text-emerald-500', glow: 'group-hover:shadow-emerald-500/10' }
+    : title.includes('Occupancy') 
+    ? { bg: 'from-indigo-50 to-violet-50', border: 'border-indigo-100/50', icon: 'bg-indigo-100 text-indigo-500', glow: 'group-hover:shadow-indigo-500/10' }
+    : { bg: 'from-blue-50 to-cyan-50', border: 'border-blue-100/50', icon: 'bg-blue-100 text-blue-500', glow: 'group-hover:shadow-blue-500/10' };
+
   return (
-    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col gap-4 relative overflow-hidden group hover:shadow-md transition-all cursor-default">
-      {/* Background Graphic Decoration */}
-      <div className="absolute right-0 top-0 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-        {icon}
+    <div className={`bg-gradient-to-br ${colorConfig.bg} p-6 rounded-3xl shadow-sm border ${colorConfig.border} flex flex-col gap-4 relative overflow-hidden group card-hover cursor-default ${colorConfig.glow}`}>
+      {/* Background decoration */}
+      <div className="absolute -right-6 -top-6 w-24 h-24 opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-500">
+        {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-24 h-24' })}
       </div>
       
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-xl ${
-          title.includes('Alerts') ? 'bg-red-50 text-red-500' : 
-          title.includes('Efficiency') ? 'bg-emerald-50 text-emerald-500' :
-          title.includes('Occupancy') ? 'bg-indigo-50 text-indigo-500' :
-          'bg-blue-50 text-blue-500'
-        }`}>
-          {/* Fix: Added <any> cast to satisfy the TypeScript compiler for Render's build process */}
+      <div className="flex items-center gap-3 relative z-10">
+        <div className={`p-2.5 rounded-xl ${colorConfig.icon} shadow-sm transition-transform duration-300 group-hover:scale-110`}>
           {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-5 h-5' })}
         </div>
-        <span className="text-slate-400 text-sm font-semibold">{title}</span>
+        <span className="text-slate-500 text-sm font-semibold">{title}</span>
       </div>
 
-      <div>
+      <div className="relative z-10">
         <div className="flex items-baseline gap-1">
           <h4 className="text-3xl font-bold text-slate-800 tracking-tight">{value}</h4>
           {subValue && <span className="text-slate-400 font-medium text-lg">{subValue}</span>}
         </div>
         {trend && (
-          <p className={`text-[11px] font-bold mt-1 flex items-center gap-1 ${
+          <p className={`text-[11px] font-bold mt-1.5 flex items-center gap-1 ${
             trendType === 'negative' ? 'text-red-500' : 
             trendType === 'positive' ? 'text-emerald-500' : 'text-slate-400'
           }`}>

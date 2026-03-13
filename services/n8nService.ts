@@ -1,5 +1,4 @@
-
-const WEBHOOK_URL = "https://sitykid1.app.n8n.cloud/webhook/rag-query";
+const WEBHOOK_URL = "https://trav.app.n8n.cloud/webhook/rag-query";
 
 /**
  * Sends a query to the n8n RAG webhook.
@@ -8,9 +7,9 @@ const WEBHOOK_URL = "https://sitykid1.app.n8n.cloud/webhook/rag-query";
 export async function queryN8N(query: string): Promise<string> {
   try {
     const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
     });
