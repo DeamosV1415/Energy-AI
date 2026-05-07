@@ -1,6 +1,8 @@
 // Using Vite's import.meta.env for environment variables
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || "";
 
+// Generate a unique session ID per page load for n8n Simple Memory
+const sessionId = crypto.randomUUID?.() ?? `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 /**
  * Sends a query to the n8n RAG webhook.
  * Note: Assumes the webhook accepts a JSON POST body with a 'query' field.
@@ -19,7 +21,7 @@ export async function queryN8N(query: string): Promise<string> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query, sessionId }),
     });
 
     if (!response.ok) {
