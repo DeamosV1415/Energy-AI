@@ -5,7 +5,8 @@ import { queryN8N } from '../services/n8nService';
 
 /**
  * Lightweight markdown renderer for n8n responses.
- * Handles: ### headers, **bold**, numbered lists, and line breaks.
+ * Handles: tables, ### headers, **bold**, `code`, numbered/bullet lists,
+ * code blocks, horizontal rules, and line breaks.
  */
 const renderMarkdown = (text: string): React.ReactNode[] => {
   // Normalize line endings and split into lines
@@ -13,6 +14,7 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
   const elements: React.ReactNode[] = [];
   let listItems: React.ReactNode[] = [];
   let listKey = 0;
+  let tableKey = 0;
 
   const flushList = () => {
     if (listItems.length > 0) {
@@ -26,21 +28,31 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
   };
 
   const renderInline = (line: string): React.ReactNode[] => {
-    // Process **bold** markers
+    // Process **bold** and `code` markers
     const parts: React.ReactNode[] = [];
-    const boldRegex = /\*\*(.+?)\*\*/g;
+    const inlineRegex = /\*\*(.+?)\*\*|`([^`]+)`/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
-    while ((match = boldRegex.exec(line)) !== null) {
+    while ((match = inlineRegex.exec(line)) !== null) {
       if (match.index > lastIndex) {
         parts.push(line.slice(lastIndex, match.index));
       }
-      parts.push(
-        <strong key={`b-${match.index}`} className="font-semibold text-slate-900">
-          {match[1]}
-        </strong>
-      );
+      if (match[1]) {
+        // Bold
+        parts.push(
+          <strong key={`b-${match.index}`} className="font-semibold text-slate-900">
+            {match[1]}
+          </strong>
+        );
+      } else if (match[2]) {
+        // Inline code
+        parts.push(
+          <code key={`c-${match.index}`} className="px-1.5 py-0.5 bg-slate-100 text-blue-700 text-xs rounded font-mono">
+            {match[2]}
+          </code>
+        );
+      }
       lastIndex = match.index + match[0].length;
     }
 
@@ -51,16 +63,135 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
     return parts.length > 0 ? parts : [line];
   };
 
-  lines.forEach((line, i) => {
+  /** Check if a line is a table separator (e.g. |---|---|) */
+  const isTableSeparator = (line: string): boolean => {
+    return /^\|?[\s-:|]+\|[\s-:|]*\|?$/.test(line.trim());
+  };
+
+  /** Parse a table row into cell strings */
+  const parseTableRow = (line: string): string[] => {
+    return line
+      .trim()
+      .replace(/^\|/, '')
+      .replace(/\|$/, '')
+      .split('|')
+      .map(cell => cell.trim());
+  };
+
+  /** Check if a line looks like a table row */
+  const isTableRow = (line: string): boolean => {
     const trimmed = line.trim();
+    return trimmed.includes('|') && trimmed.split('|').length >= 2;
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
 
     // Skip empty lines but flush lists
     if (!trimmed) {
       flushList();
-      return;
+      i++;
+      continue;
     }
 
-    // ### Heading
+    // ─── Code block (```) ───
+    if (trimmed.startsWith('```')) {
+      flushList();
+      const codeLines: string[] = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      elements.push(
+        <pre key={`code-${i}`} className="bg-slate-800 text-slate-100 text-xs p-4 rounded-xl my-3 overflow-x-auto font-mono leading-relaxed">
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      );
+      i++; // skip closing ```
+      continue;
+    }
+
+    // ─── Horizontal rule (---, ***, ___) ───
+    if (/^[-*_]{3,}$/.test(trimmed)) {
+      flushList();
+      elements.push(
+        <hr key={`hr-${i}`} className="border-t border-slate-200 my-4" />
+      );
+      i++;
+      continue;
+    }
+
+    // ─── Table detection ───
+    // A table starts when current line is a table row and next line is a separator
+    if (isTableRow(trimmed)) {
+      // Look ahead to see if this is a table (header + separator pattern)
+      const nextLine = i + 1 < lines.length ? lines[i + 1].trim() : '';
+      const isTable = isTableSeparator(nextLine) || 
+        // Also detect tables without headers (just rows of pipes)
+        (isTableRow(trimmed) && i + 1 < lines.length && isTableRow(nextLine) && !trimmed.startsWith('#'));
+
+      if (isTable) {
+        flushList();
+        const tableRows: string[][] = [];
+        let hasHeader = false;
+
+        // Parse header row
+        tableRows.push(parseTableRow(trimmed));
+        i++;
+
+        // Skip separator row if present
+        if (i < lines.length && isTableSeparator(lines[i].trim())) {
+          hasHeader = true;
+          i++;
+        }
+
+        // Parse remaining data rows
+        while (i < lines.length && isTableRow(lines[i].trim()) && lines[i].trim() !== '') {
+          if (!isTableSeparator(lines[i].trim())) {
+            tableRows.push(parseTableRow(lines[i].trim()));
+          }
+          i++;
+        }
+
+        // Render table
+        const headerRow = hasHeader ? tableRows[0] : null;
+        const dataRows = hasHeader ? tableRows.slice(1) : tableRows;
+
+        elements.push(
+          <div key={`table-${tableKey++}`} className="my-3 overflow-x-auto rounded-xl border border-blue-100/60 shadow-sm">
+            <table className="w-full text-sm">
+              {headerRow && (
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/60">
+                    {headerRow.map((cell, ci) => (
+                      <th key={ci} className="px-4 py-2.5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider whitespace-nowrap">
+                        {renderInline(cell)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {dataRows.map((row, ri) => (
+                  <tr key={ri} className={`border-b border-slate-100/60 ${ri % 2 === 0 ? 'bg-white/60' : 'bg-slate-50/40'} hover:bg-blue-50/30 transition-colors`}>
+                    {row.map((cell, ci) => (
+                      <td key={ci} className="px-4 py-2 text-slate-700 font-medium whitespace-nowrap">
+                        {renderInline(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        continue;
+      }
+    }
+
+    // ─── ### Heading ───
     if (trimmed.startsWith('### ')) {
       flushList();
       elements.push(
@@ -69,10 +200,11 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
           {renderInline(trimmed.slice(4))}
         </h4>
       );
-      return;
+      i++;
+      continue;
     }
 
-    // ## Heading
+    // ─── ## Heading ───
     if (trimmed.startsWith('## ')) {
       flushList();
       elements.push(
@@ -80,10 +212,23 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
           {renderInline(trimmed.slice(3))}
         </h3>
       );
-      return;
+      i++;
+      continue;
     }
 
-    // Numbered list: "1. ", "2. ", etc.
+    // ─── # Heading ───
+    if (trimmed.startsWith('# ')) {
+      flushList();
+      elements.push(
+        <h2 key={`h1-${i}`} className="text-lg font-bold text-slate-900 mt-4 mb-2">
+          {renderInline(trimmed.slice(2))}
+        </h2>
+      );
+      i++;
+      continue;
+    }
+
+    // ─── Numbered list: "1. ", "2. ", etc. ───
     const listMatch = trimmed.match(/^(\d+)\.\s+(.+)/);
     if (listMatch) {
       listItems.push(
@@ -92,10 +237,11 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
           {renderInline(listMatch[2])}
         </li>
       );
-      return;
+      i++;
+      continue;
     }
 
-    // Bullet list: "- " or "* "
+    // ─── Bullet list: "- " or "* " ───
     const bulletMatch = trimmed.match(/^[-*]\s+(.+)/);
     if (bulletMatch) {
       listItems.push(
@@ -104,17 +250,19 @@ const renderMarkdown = (text: string): React.ReactNode[] => {
           <span>{renderInline(bulletMatch[1])}</span>
         </li>
       );
-      return;
+      i++;
+      continue;
     }
 
-    // Regular paragraph
+    // ─── Regular paragraph ───
     flushList();
     elements.push(
       <p key={`p-${i}`} className="text-sm leading-relaxed text-slate-700 my-1">
         {renderInline(trimmed)}
       </p>
     );
-  });
+    i++;
+  }
 
   flushList();
   return elements;
